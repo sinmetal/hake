@@ -26,6 +26,25 @@ func (r *Row) MarshalJSON() ([]byte, error) {
 	return json.Marshal(m)
 }
 
+func (r *Row) ToStringArray() ([]string, error) {
+	row := (*spanner.Row)(r)
+	names := row.ColumnNames()
+	l := []string{}
+	for _, n := range names {
+		var col spanner.GenericColumnValue
+		if err := row.ColumnByName(n, &col); err != nil {
+			return nil, err
+		}
+		s, err := (*Column)(&col).TOString()
+		if err != nil {
+			return nil, err
+		}
+		l = append(l, s)
+	}
+
+	return l, nil
+}
+
 // Rows convert []*spanner.Row to []*Row.
 func Rows(rows []*spanner.Row) []*Row {
 	if rows == nil {

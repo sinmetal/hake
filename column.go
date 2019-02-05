@@ -27,6 +27,14 @@ func (c *Column) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v)
 }
 
+func (c *Column) TOString() (string, error) {
+	v, err := c.marshal(c.Type, c.Value)
+	if err != nil {
+		return "", err
+	}
+	return fmt.Sprintf("%v", v), nil
+}
+
 func (c *Column) marshal(t *gspanner.Type, v *structpb.Value) (interface{}, error) {
 	if _, isNull := v.Kind.(*structpb.Value_NullValue); isNull {
 		return nil, nil
